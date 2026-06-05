@@ -1,0 +1,8 @@
+streamlit
+opencv-python
+moviepy
+librosa
+fer
+transformers
+nltk
+soundfile
