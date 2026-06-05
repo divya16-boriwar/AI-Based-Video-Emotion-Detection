@@ -8,12 +8,16 @@ import moviepy.editor as mp
 import librosa
 import base64
 import shutil
+from pathlib import Path
 from fer import FER
 from collections import Counter
 from moviepy.editor import ImageSequenceClip
 from transformers import WhisperProcessor, WhisperForConditionalGeneration, pipeline
 from nltk.tokenize import sent_tokenize
 import nltk
+
+BASE_DIR = Path(__file__).resolve().parent
+DEFAULT_BACKGROUND_IMAGE = BASE_DIR / "assets" / "sarang_bg.jpg"
 
 # Attempt to download punkt and punkt_tab if missing
 try:
@@ -140,6 +144,14 @@ def calculate_overall_sentiment(sentence_sentiments):
 
 # Function to add background image
 def add_bg_from_local(image_path):
+    image_path = Path(image_path)
+    if not image_path.is_absolute():
+        image_path = BASE_DIR / image_path
+
+    if not image_path.exists():
+        st.warning("Background image not found. Continuing without a custom background.")
+        return
+
     with open(image_path, "rb") as image_file:
         encoded_string = base64.b64encode(image_file.read()).decode()
 
@@ -215,7 +227,7 @@ def main():
     st.markdown('<p class="title">EmoSentia: Real-time Emotion & Sentiment Detection in Video Speech</p>', unsafe_allow_html=True)
     st.markdown('<p class="subheader">Upload your video and analyze emotions in video speech.</p>', unsafe_allow_html=True)
     # Background image
-    add_bg_from_local('/content/sarang bg.jpg')  # Ensure the image is in the right path
+    add_bg_from_local(DEFAULT_BACKGROUND_IMAGE)
 
     # Video Upload and Display with playback speed control
     st.markdown('<p class="upload-text">Upload a video file and preview it:</p>', unsafe_allow_html=True)
